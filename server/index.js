@@ -8,10 +8,36 @@ const io = new Server({
 
 io.listen(3001);
 
+const items = {
+  table: {
+    name: "Table",
+    size: [3, 6]
+  },
+
+  chair: {
+    name: "Chair",
+    size: [2, 2]
+  }
+}
+
 const characters = [];
+const map = {
+  size: [10, 10],
+  gridDivision: 2,
+  items: [
+    {
+      ...items.chair,
+      gridPosition: [2,2],
+    },
+    {
+      ...items.table,
+      gridPosition: [7,6],
+    },
+  ],
+};
 
 const generateRandomPosition = () => {
-  return [Math.random() * 3, 0, Math.random() * 3];
+  return [Math.random() * map.size[0], 0, Math.random() * map.size[1]];
 };
 
 const generateRandomHexColor = () => {
@@ -29,7 +55,12 @@ io.on("connection", (socket) => {
     bottomColor: generateRandomHexColor(),
   });
 
-  socket.emit("hello");
+  socket.emit("hello", {
+    map,
+    characters,
+    id: socket.id,
+    items,
+  });
 
   io.emit("characters", characters);
 
